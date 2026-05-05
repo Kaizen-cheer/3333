@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FriendBooster Shop | บริการรับทำเซิร์ฟเวอร์ระบบดิสคอร์ดและสินค้าอื่นๆ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #0a0e17;
+            --secondary-bg: #121a29;
+            --accent-blue: #007bff;
+            --accent-light: #00d4ff;
+            --text-white: #ffffff;
+            --text-gray: #b0b8c4;
+            --danger: #ff4d4d;
+            --success: #2ecc71;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-white);
+            line-height: 1.6;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            background: var(--secondary-bg);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-blue);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            color: white;
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .nav-links button:hover { background: var(--accent-blue); }
+
+        /* --- Main Content --- */
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 20px; }
+
+        .important-notice {
+            background: rgba(255, 77, 77, 0.1);
+            border-left: 5px solid var(--danger);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .important-notice h2 { color: var(--danger); margin-bottom: 10px; }
+
+        /* --- Product Grid --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: var(--secondary-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #232d3f;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover { transform: translateY(-10px); border-color: var(--accent-blue); }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            background: #1c2638;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-gray);
+        }
+
+        .product-info { padding: 20px; }
+        .price-tag { color: var(--accent-light); font-size: 1.5rem; font-weight: bold; }
+
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* --- Wallet Section --- */
+        .wallet-section {
+            background: var(--secondary-bg);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .account-info {
+            background: #0a0e17;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 15px 0;
+            border: 1px dashed var(--accent-light);
+        }
+
+        /* --- Modal & Admin --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--secondary-bg);
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0a0e17;
+            border: 1px solid #232d3f;
+            color: white;
+        }
+
+        .admin-panel { display: none; margin-top: 50px; border-top: 2px solid white; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo-area">
+        <div class="logo-placeholder">LOGO</div>
+        <h1>FriendBooster</h1>
+    </div>
+    <div class="nav-links">
+        <span id="user-credit">ยอดเงินคงเหลือ: 0 ฿</span>
+        <button onclick="showModal('loginModal')">Admin Login</button>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- แจ้งเตือนสำคัญ -->
+    <div class="important-notice">
+        <h2><i class="fas fa-exclamation-triangle"></i> ข้อควรระวังสำคัญมาก!</h2>
+        <p>เมื่อลูกค้าเข้าเซิร์ฟเวอร์แล้ว ให้ลูกค้าเข้าเพียง **1 บัญชีเท่านั้น** เพื่อให้ทางร้านโอนสิทธิ์ความเป็นเจ้าของ (โอนหัว) ได้ถูกต้อง</p>
+        <p style="font-weight: bold; margin-top: 10px;">* หากเข้าหลายบัญชีแล้วเกิดความผิดพลาดในการโอน ทางร้านจะไม่รับผิดชอบทุกกรณี *</p>
+    </div>
+
+    <!-- ระบบเติมเงิน -->
+    <div class="wallet-section">
+        <h2><i class="fas fa-wallet"></i> เติมเงินเข้าระบบ</h2>
+        <div class="account-info">
+            <p>ธนาคารกสิกรไทย (K-Bank)</p>
+            <h3 style="color: var(--accent-light);">230-3-21237-2</h3>
+            <p>ชื่อบัญชี: นายศิรวิทย์ ปัญจะมี</p>
+        </div>
+        <div style="max-width: 400px; margin: 0 auto;">
+            <p>แนบสลิปเพื่อตรวจสอบเงิน</p>
+            <input type="file" id="slipInput" accept="image/*">
+            <button class="buy-btn" onclick="uploadSlip()">ยืนยันการแจ้งชำระเงิน</button>
+        </div>
+    </div>
+
+    <!-- หมวดหมู่สินค้า -->
+    <h2><i class="fas fa-shopping-cart"></i> เลือกซื้อสินค้า</h2>
+    <hr style="border: 1px solid #232d3f; margin: 20px 0;">
+    
+    <div class="product-grid" id="productDisplay">
+        <!-- ตัวอย่างสินค้า -->
+        <div class="product-card">
+            <div class="product-img">รูปตัวอย่างสินค้า</div>
+            <div class="product-info">
+                <h3>Nitro Booster (1 Month)</h3>
+                <p class="price-tag">150 ฿</p>
+                <button class="buy-btn" onclick="buyProduct(150, 'https://discord.gg/example')">ซื้อสินค้า</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (เฉพาะแอดมินเห็น) -->
+    <div id="adminPanel" class="admin-panel">
+        <h2 style="color: var(--accent-light);">ระบบหลังบ้าน (Admin Only)</h2>
+        <div style="background: #1c2638; padding: 20px; border-radius: 10px; margin-top: 10px;">
+            <h3>เพิ่มสินค้าใหม่</h3>
+            <input type="text" id="pName" placeholder="ชื่อสินค้า">
+            <input type="number" id="pPrice" placeholder="ราคา">
+            <input type="text" id="pLink" placeholder="ลิงก์ Discord สินค้า">
+            <button class="buy-btn" style="background: var(--success);" onclick="addNewProduct()">ยืนยันเพิ่มสินค้า</button>
+            <button class="buy-btn" style="background: var(--danger); margin-top: 20px;" onclick="logout()">ออกจากระบบแอดมิน</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal เข้าสู่ระบบ -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h3>เข้าสู่ระบบแอดมิน</h3>
+        <input type="password" id="adminPass" placeholder="กรอกรหัสผ่านแอดมิน">
+        <button class="buy-btn" onclick="checkAdmin()">ตกลง</button>
+        <button class="buy-btn" style="background: #333;" onclick="hideModal('loginModal')">ยกเลิก</button>
+    </div>
+</div>
+
+<script>
+    let userCredit = 0;
+
+    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // ระบบ Login Admin
+    function checkAdmin() {
+        const pass = document.getElementById('adminPass').value;
+        if(pass === "2212") {
+            alert("ยินดีต้อนรับแอดมิน!");
+            document.getElementById('adminPanel').style.display = 'block';
+            hideModal('loginModal');
+            window.scrollTo(0, document.body.scrollHeight);
+        } else {
+            alert("รหัสผ่านไม่ถูกต้อง!");
+        }
+    }
+
+    function logout() {
+        document.getElementById('adminPanel').style.display = 'none';
+        alert("ออกจากระบบแล้ว");
+    }
+
+    // ระบบเติมเงิน (จำลอง)
+    function uploadSlip() {
+        const file = document.getElementById('slipInput').files[0];
+        if(!file) return alert("กรุณาเลือกรูปภาพสลิป");
+        
+        alert("ส่งสลิปเรียบร้อย! ระบบกำลังตรวจสอบ (จำลอง: อนุมัติ 100 ฿)");
+        userCredit += 100;
+        document.getElementById('user-credit').innerText = `ยอดเงินคงเหลือ: ${userCredit} ฿`;
+    }
+
+    // ระบบซื้อสินค้า
+    function buyProduct(price, link) {
+        if(userCredit < price) {
+            alert("ยอดเงินไม่พอ! กรุณาเติมเงิน");
+        } else {
+            userCredit -= price;
+            document.getElementById('user-credit').innerText = `ยอดเงินคงเหลือ: ${userCredit} ฿`;
+            alert("ซื้อสินค้าสำเร็จ! ลิงก์ Discord ของคุณคือ: " + link);
+            window.open(link, '_blank');
+        }
+    }
+
+    // ระบบเพิ่มสินค้าโดยแอดมิน
+    function addNewProduct() {
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const link = document.getElementById('pLink').value;
+
+        if(!name || !price || !link) return alert("กรุณากรอกข้อมูลให้ครบ");
+
+        const grid = document.getElementById('productDisplay');
+        const newProd = document.createElement('div');
+        newProd.className = 'product-card';
+        newProd.innerHTML = `
+            <div class="product-img">รูปตัวอย่างสินค้า</div>
+            <div class="product-info">
+                <h3>${name}</h3>
+                <p class="price-tag">${price} ฿</p>
+                <button class="buy-btn" onclick="buyProduct(${price}, '${link}')">ซื้อสินค้า</button>
+            </div>
+        `;
+        grid.appendChild(newProd);
+        alert("เพิ่มสินค้าสำเร็จ!");
+    }
+</script>
+
+</body>
+</html>
